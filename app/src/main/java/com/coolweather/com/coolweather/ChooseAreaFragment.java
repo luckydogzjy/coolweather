@@ -1,9 +1,11 @@
 package com.coolweather.com.coolweather;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,12 +77,19 @@ public class ChooseAreaFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("a","----------------------------");
                 if (currentLevel == LEVEL_PROVINCE){
                     selectedProvince = provinceList.get(position);
                     queryCities();
                 }else if (currentLevel == LEVEL_CITY){
                     selectedCity = cityList.get(position);
                     queryCounties();
+                }else if (currentLevel == LEVEL_COUNTY) {
+                        String weatherId = countyList.get(position).getWeatherId();
+                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        intent.putExtra("weather_id", weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
                 }
             }
         });
@@ -154,7 +163,7 @@ public class ChooseAreaFragment extends Fragment {
             int provinceCode = selectedProvince.getProvinceCode();
             int cityCode = selectedCity.getCityCode();
             String address = "http://guolin.tech/api/china/" + provinceCode + "/" + cityCode;
-            queryFromServer(address,"city");
+            queryFromServer(address,"county");
         }
     }
     //根据传入的地址和类型从服务器上查询省市县数据
@@ -204,7 +213,7 @@ public class ChooseAreaFragment extends Fragment {
     //显示进度对话框
     private void showProgressDialog(){
         if (progressDialog == null){
-            progressDialog = new ProgressDialog(getContext());
+            progressDialog = new ProgressDialog(getActivity());
             progressDialog.setMessage("正在加载....");
             progressDialog.setCanceledOnTouchOutside(false);
         }
