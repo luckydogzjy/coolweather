@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //如果选定了该天气，一打开就默认显示该天气
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         if (pref.getString("weather",null) != null){
             Intent intent = new Intent(MainActivity.this,WeatherActivity.class);

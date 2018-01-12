@@ -21,6 +21,7 @@ import com.coolweather.com.coolweather.db.County;
 import com.coolweather.com.coolweather.db.Province;
 import com.coolweather.com.coolweather.util.HttpUtil;
 import com.coolweather.com.coolweather.util.Utility;
+import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 
 import org.litepal.crud.DataSupport;
 
@@ -43,6 +44,8 @@ public class ChooseAreaFragment extends Fragment {
     private ProgressDialog progressDialog;
     private TextView titleText;
     private Button backButton;
+    private AlphaInAnimationAdapter animationAdapter;
+    //ListView所需部件
     private ListView listView;
     private ArrayAdapter<String> adapter;
     private List<String> dataList = new ArrayList<>();
@@ -59,6 +62,7 @@ public class ChooseAreaFragment extends Fragment {
     //当前选中的级别
     private int currentLevel;
 
+    //初始化Fragment的布局
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -67,10 +71,16 @@ public class ChooseAreaFragment extends Fragment {
         backButton = (Button)view.findViewById(R.id.back_button);
         listView = (ListView)view.findViewById(R.id.list_view);
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1,dataList);
-        listView.setAdapter(adapter);
+        //将自己写好的适配器放入AlphaInAnimationAdapter
+        animationAdapter = new AlphaInAnimationAdapter(adapter);
+        //设置精确监听
+        animationAdapter.setAbsListView(listView);
+        listView.setAdapter(animationAdapter);
+
         return view;
     }
 
+    //在布局活动创建之时
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -79,20 +89,29 @@ public class ChooseAreaFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d("a","----------------------------");
                 if (currentLevel == LEVEL_PROVINCE){
+                    //如果当前等级为省，则将省列表的位置赋给被选中的省份
                     selectedProvince = provinceList.get(position);
+                    //遍历被选中的省份中的市
                     queryCities();
                 }else if (currentLevel == LEVEL_CITY){
+                    //如果当前等级为市，则将市列表的位置赋给被选中的市
                     selectedCity = cityList.get(position);
+                    //遍历被选中的市里的县
                     queryCounties();
                 }else if (currentLevel == LEVEL_COUNTY) {
+                    //如果当前等级为县，则获取该县所在位置再获取其天气id赋给weatherId
                         String weatherId = countyList.get(position).getWeatherId();
                     if (getActivity() instanceof MainActivity){
+                        //如果寄主活动是MainActivity，则跳转到WeatherActivity
                         Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        //传递出weatherId
                         intent.putExtra("weather_id", weatherId);
                         startActivity(intent);
                         getActivity().finish();
                     }else if (getActivity() instanceof WeatherActivity){
+                        //如果寄主活动是WeatherActivity，则声明他的实例activity
                         WeatherActivity activity = (WeatherActivity)getActivity();
+                        //通过实例activity控制侧滑关闭，下拉刷新
                         activity.drawerLayout.closeDrawers();
                         activity.swipeRefresh.setRefreshing(true);
                         activity.requestWeather(weatherId);
@@ -100,6 +119,7 @@ public class ChooseAreaFragment extends Fragment {
                 }
             }
         });
+        //返回按钮
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,22 +130,29 @@ public class ChooseAreaFragment extends Fragment {
                 }
             }
         });
+        //默认遍历省列表
         queryProvinces();
+
     }
+
 
     //查询全国所有的省，优先从数据库查，如果没有查到再到数据库上查
     private void queryProvinces() {
         titleText.setText("中国");
         backButton.setVisibility(View.GONE);
+        //通过Litepal的DataSupport查询所有的省
         provinceList = DataSupport.findAll(Province.class);
         if (provinceList.size() > 0) {
+            //查到了先清理一遍，再遍历一遍城市名字
             dataList.clear();
             for (Province province : provinceList) {
                 dataList.add(province.getProvinceName());
             }
-
+            //动态刷新列表，重绘当前可见区域
             adapter.notifyDataSetChanged();
+            //列表移动到指定的position处
             listView.setSelection(0);
+            //修改当前等级
             currentLevel = LEVEL_PROVINCE;
         }else {
             String address = "http://guolin.tech/api/china";
@@ -176,6 +203,7 @@ public class ChooseAreaFragment extends Fragment {
     //根据传入的地址和类型从服务器上查询省市县数据
     private void queryFromServer(String address, final String type) {
         showProgressDialog();
+        //网络请求操作在runOnUiThread中进行
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -233,4 +261,6 @@ public class ChooseAreaFragment extends Fragment {
             progressDialog.dismiss();
         }
     }
+
+
 }

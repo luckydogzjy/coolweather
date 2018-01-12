@@ -89,11 +89,11 @@ public class Utility {
     //将返回的JSON数据解析成Weather实体
     public static Weather handleWeatherResponse(String response){
         try {
-            //将其拆分成{"HeWeather5": [{}]}看待
+            //将其拆分成{"HeWeather": [{}]}看待
             JSONObject jsonObject = new JSONObject(response);
             //按和风天气的摆放方式解析
             JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
-            //拆分成{“HeWeather5”: [{}]}看待，weatherContent就等价于下面的内容，也就是数组中第0个元素值。
+            //拆分成{“HeWeather”: [{}]}看待，weatherContent就等价于下面的内容，也就是数组中第0个元素值。
             String weatherContent = jsonArray.getJSONObject(0).toString();
             return new Gson().fromJson(weatherContent,Weather.class);
         }catch (Exception e){

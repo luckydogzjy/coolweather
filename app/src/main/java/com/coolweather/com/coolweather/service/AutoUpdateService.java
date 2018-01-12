@@ -33,7 +33,7 @@ public class AutoUpdateService extends Service {
         updateWeather();
         updateBingPic();
         AlarmManager manager = (AlarmManager)getSystemService(ALARM_SERVICE);
-        //8小时的毫秒数
+        //8小时的豪秒数
         int anHour = 8 * 60 * 60;
         long triggerAtTime = SystemClock.elapsedRealtime() + anHour;
         Intent i = new Intent(this, AutoUpdateService.class);

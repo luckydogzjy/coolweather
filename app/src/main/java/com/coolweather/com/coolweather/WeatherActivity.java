@@ -53,6 +53,7 @@ public class WeatherActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //设置透明状态栏
         if (Build.VERSION.SDK_INT >= 21){
             View decorView = getWindow().getDecorView();
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
@@ -111,7 +112,7 @@ public class WeatherActivity extends AppCompatActivity {
         //加载必应每日一图
         String bingPic = pref.getString("bing_pic",null);
         if (bingPic != null){
-            //load里的String选项其实是缓存
+            //load里的String选项其实是指缓存
             Glide.with(this).load(bingPic).into(bingPicImg);
         }else {
             loadBingPic();
