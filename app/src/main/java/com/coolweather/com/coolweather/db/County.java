@@ -3,7 +3,7 @@ package com.coolweather.com.coolweather.db;
 import org.litepal.crud.DataSupport;
 
 /**
- * Created by 非皇 on 2017/10/5.
+ * Created by 非皇 on 2018/1/13.
  */
 public class County extends DataSupport {
     private int id;

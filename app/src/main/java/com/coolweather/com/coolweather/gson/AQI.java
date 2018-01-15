@@ -1,7 +1,7 @@
 package com.coolweather.com.coolweather.gson;
 
 /**
- * Created by 非皇 on 2017/10/6.
+ * Created by 非皇 on 2018/1/13.
  */
 /*"aqi": { //空气质量，仅限国内城市
         "city": {

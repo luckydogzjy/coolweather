@@ -2,7 +2,9 @@ package com.coolweather.com.coolweather;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -34,7 +36,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 /**
- * Created by 非皇 on 2017/10/5.
+ * Created by 非皇 on 2018/1/13.
  */
 /*用于遍历省市县数据的碎片*/
 public class ChooseAreaFragment extends Fragment {
@@ -44,7 +46,8 @@ public class ChooseAreaFragment extends Fragment {
     private ProgressDialog progressDialog;
     private TextView titleText;
     private Button backButton;
-    private AlphaInAnimationAdapter animationAdapter;
+    //框架所提供的适配器
+    public AlphaInAnimationAdapter animationAdapter;
     //ListView所需部件
     private ListView listView;
     private ArrayAdapter<String> adapter;
@@ -111,6 +114,10 @@ public class ChooseAreaFragment extends Fragment {
                     }else if (getActivity() instanceof WeatherActivity){
                         //如果寄主活动是WeatherActivity，则声明他的实例activity
                         WeatherActivity activity = (WeatherActivity)getActivity();
+
+                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(activity).edit();
+                        editor.putString("temp_weather_id",weatherId);
+                        editor.apply();
                         //通过实例activity控制侧滑关闭，下拉刷新
                         activity.drawerLayout.closeDrawers();
                         activity.swipeRefresh.setRefreshing(true);
@@ -257,7 +264,7 @@ public class ChooseAreaFragment extends Fragment {
 
     //关闭进度对话框
     private void closeProgressDialog(){
-        if (progressDialog != null){
+        if (progressDialog != null && progressDialog.isShowing()){
             progressDialog.dismiss();
         }
     }

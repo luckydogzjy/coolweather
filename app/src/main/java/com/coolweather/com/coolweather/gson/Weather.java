@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Created by 非皇 on 2017/10/6.
+ * Created by 非皇 on 2018/1/13.
  */
 //需要一个实体类来引用刚刚创建的各个实体类
 public class Weather {

@@ -3,7 +3,7 @@ package com.coolweather.com.coolweather.gson;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by 非皇 on 2017/10/6.
+ * Created by 非皇 on 2018/1/13.
  */
 /*
 "daily_forecast": [ //天气预报，国内7天，国际10天

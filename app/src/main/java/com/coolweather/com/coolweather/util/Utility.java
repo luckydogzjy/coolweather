@@ -13,7 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by 非皇 on 2017/10/5.
+ * Created by 非皇 on 2018/1/15.
  */
 public class Utility {
     //解析和处理服务器返回的省级数据
