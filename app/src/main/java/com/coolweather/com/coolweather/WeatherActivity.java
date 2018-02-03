@@ -36,6 +36,7 @@ public class WeatherActivity extends AppCompatActivity {
     public DrawerLayout drawerLayout;
     private Button navButton;
     public SwipeRefreshLayout swipeRefresh;
+    private String mWeatherId;
     private ScrollView weatherLayout;
     private TextView titleCity;
     private TextView titleUpdateTime;
@@ -83,25 +84,23 @@ public class WeatherActivity extends AppCompatActivity {
         String weatherString = pref.getString("weather",null);
         //记录城市id
 
-        final String weatherId;
+        //final String weatherId;
         if (weatherString != null){
             //有缓存时直接解析天气数据
             Weather weather = Utility.handleWeatherResponse(weatherString);
-            weatherId = weather.basic.weatherId;
+            mWeatherId = weather.basic.weatherId;
             showWeatherInfo(weather);
         }else {
             //无缓存时去服务器查询天气
             //getStringExtra代表得到返回的值
-            weatherId = getIntent().getStringExtra("weather_id");
+            mWeatherId = getIntent().getStringExtra("weather_id");
             weatherLayout.setVisibility(View.INVISIBLE);
-            requestWeather(weatherId);
+            requestWeather(mWeatherId);
         }
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this);
-                String temp = pref.getString("temp_weather_id",weatherId);
-                requestWeather(temp);
+                requestWeather(mWeatherId);
             }
         });
         //打开滑动菜单
@@ -124,6 +123,7 @@ public class WeatherActivity extends AppCompatActivity {
     public void requestWeather(final String weatherId){
         String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId
                 + "&key=423bc726ee0e49c282515f5de4921476";
+
         System.out.println("weatherUrl:" + weatherUrl);
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
@@ -153,6 +153,7 @@ public class WeatherActivity extends AppCompatActivity {
                             editor.putString("weather",responseText);
                             editor.apply();
                            // weatherId = weather.basic.weatherId;
+                            mWeatherId = weather.basic.weatherId;
                             showWeatherInfo(weather);
 
 

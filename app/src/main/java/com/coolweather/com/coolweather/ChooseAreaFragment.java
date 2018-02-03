@@ -2,9 +2,7 @@ package com.coolweather.com.coolweather;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -114,10 +112,6 @@ public class ChooseAreaFragment extends Fragment {
                     }else if (getActivity() instanceof WeatherActivity){
                         //如果寄主活动是WeatherActivity，则声明他的实例activity
                         WeatherActivity activity = (WeatherActivity)getActivity();
-
-                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(activity).edit();
-                        editor.putString("temp_weather_id",weatherId);
-                        editor.apply();
                         //通过实例activity控制侧滑关闭，下拉刷新
                         activity.drawerLayout.closeDrawers();
                         activity.swipeRefresh.setRefreshing(true);
@@ -209,6 +203,7 @@ public class ChooseAreaFragment extends Fragment {
     }
     //根据传入的地址和类型从服务器上查询省市县数据
     private void queryFromServer(String address, final String type) {
+        //显示进度对话框
         showProgressDialog();
         //网络请求操作在runOnUiThread中进行
         HttpUtil.sendOkHttpRequest(address, new Callback() {
@@ -227,6 +222,7 @@ public class ChooseAreaFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 String responseText = response.body().string();
                 boolean result = false;
+                //请求的省市县两两匹配就解析所请求的地区
                 if ("province".equals(type)){
                     result = Utility.handleProvinceResponse(responseText);
                 }else if ("city".equals(type)){
@@ -234,11 +230,14 @@ public class ChooseAreaFragment extends Fragment {
                 }else if ("county".equals(type)){
                     result = Utility.handleCountyResponse(responseText,selectedCity.getId());
                 }
+                //请求成功
                 if (result){
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            //隐藏进度对话框
                             closeProgressDialog();
+                            //若两两匹配就遍历省或市或县
                             if ("province".equals(type)){
                                 queryProvinces();
                             }else if ("city".equals(type)){
